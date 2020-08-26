@@ -1,0 +1,48 @@
+{
+    "AppName": "KBS",
+    "members": [
+    {
+        "Zeile1": "- Komm  runter -",
+        "Zeile2": "---- jetzt ----",
+        "bell": "on",
+        "display": "off"
+    },
+    {
+      "Zeile1": "!! Aufstehen  !!",
+      "Zeile2": "es ist Zeit",
+      "bell": "on",
+      "display": "off"
+    },
+    {
+        "Zeile1": "Komm runter",
+        "Zeile2": "Essen kochen",
+        "bell": "on",
+        "display": "off"
+    },
+    {
+        "Zeile1": "Komm runter",
+        "Zeile2": "Essen ist fertig",
+        "bell": "on",
+        "display": "off"
+    },
+    {              
+        "Zeile1": "Komm SOFORT RUNTER",
+        "Zeile2": "Essen ist fertig",
+        "bell": "on",
+        "display": "off"
+    },
+    {              
+        "Zeile1": "Geh ans",
+        "Zeile2": "Telefon",
+        "bell": "on",
+        "display": "off"
+    },
+    {              
+        "Zeile1": "  Geh ins Bett",
+        "Zeile2": "  -- SOFORT --",
+        "bell": "on",
+        "display": "off"
+    }
+]
+}
+

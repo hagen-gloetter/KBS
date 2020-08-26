@@ -1,0 +1,324 @@
+ * Serving Flask app "socket_server" (lazy loading)
+ * Environment: production
+   WARNING: Do not use the development server in a production environment.
+   Use a production WSGI server instead.
+ * Debug mode: off
+ * Serving Flask app "socket_server" (lazy loading)
+ * Environment: production
+   WARNING: Do not use the development server in a production environment.
+   Use a production WSGI server instead.
+ * Debug mode: off
+--> mypath: /home/pi/16x2_Display/display
+ * Serving Flask app "socket_server" (lazy loading)
+ * Environment: production
+   WARNING: Do not use the development server in a production environment.
+   Use a production WSGI server instead.
+ * Debug mode: off
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+lcd_blink 30s
+genug geblinkt
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+lcd_blink 30s
+genug geblinkt
+lcd_blink 30s
+genug geblinkt
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+lcd_blink 30s
+genug geblinkt
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+--> mypath: /home/pi/16x2_Display/display
+ * Serving Flask app "socket_server" (lazy loading)
+ * Environment: production
+   WARNING: Do not use the development server in a production environment.
+   Use a production WSGI server instead.
+ * Debug mode: off
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+lcd_blink 30s
+genug geblinkt
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+--> mypath: /home/pi/16x2_Display/display
+ * Serving Flask app "socket_server" (lazy loading)
+ * Environment: production
+   WARNING: Do not use the development server in a production environment.
+   Use a production WSGI server instead.
+ * Debug mode: off
+--> mypath: /home/pi/16x2_Display/display
+ * Serving Flask app "socket_server" (lazy loading)
+ * Environment: production
+   WARNING: Do not use the development server in a production environment.
+   Use a production WSGI server instead.
+ * Debug mode: off
+--> mypath: /home/pi/16x2_Display/display
+ * Serving Flask app "socket_server" (lazy loading)
+ * Environment: production
+   WARNING: Do not use the development server in a production environment.
+   Use a production WSGI server instead.
+ * Debug mode: off
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+lcd_blink 30s
+genug geblinkt
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+lcd_blink 30s
+genug geblinkt
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+lcd_blink 30s
+genug geblinkt
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+lcd_blink 30s
+genug geblinkt
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+lcd_blink 30s
+genug geblinkt
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+lcd_blink 30s
+genug geblinkt
+lcd_blink 30s
+genug geblinkt
+lcd_blink 30s
+genug geblinkt
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')
+buzzer ready
+('Playing tune ', 1)
+('Buzzer', 'finished')

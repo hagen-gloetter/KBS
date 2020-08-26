@@ -1,0 +1,6 @@
+
+
+
+@reboot /bin/bash /home/pi/16x2_Display/crontab.sh
+
+*/1 * * * * /usr/bin/python3 /home/pi/16x2_Display/display/lcd_off.py 
