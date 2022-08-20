@@ -6,3 +6,5 @@ Isn't it annoying to always shout through the house or apartment to call the chi
 
 **---- German ----**
 Ist es nicht nervig immer durch das Haus oder Wohnung zu brüllen um die Kinder zum Essen oder zum Aufstehen zu rufen? Dafür muss es doch eine technische Lösung geben. Genau das ist das Kinder Benachrichtigung System. Das System basiert auf einem Raspberry Pi (Nano) einem 16x2 LCD-Display und einem alten Bios-Buzzer. Das KBS löst genau das oben benannte Problem. Das Display und der Buzzer werden über eine REST-API angesteuert. KBS kann also von jedem System verwendet werden, dass POST-Calls an APIs abschicken kann.
+
+Have Fun with the Project
