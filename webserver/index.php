@@ -90,12 +90,13 @@
 		if (isset($_POST['line2']))   { $line2   = htmlspecialchars($_POST['line2']);   } else {$line2 = "$uhrzeit";}
 		if (isset($_POST['bell']))    { $bell    = htmlspecialchars($_POST['bell']);    } else {$bell = "off";}
 		if (isset($_POST['display'])) { $display = htmlspecialchars($_POST['display']); } else {$display = "off";}
-		if (isset($_POST['person'])) { $person = $_POST['person']; } else {$person = "";}
-			$myObj-> line1 = "$line1";
-			$myObj-> line2 = "$line2";
-			$myObj-> bell = "$bell";
-			$myObj-> display = "$display";
-			$myObj-> person = "$person";
+		if (isset($_POST['person'])) { $person = htmlspecialchars($_POST['person']); } else {$person = "";}
+			$myObj = new stdClass();
+			$myObj->line1 = $line1;
+			$myObj->line2 = $line2;
+			$myObj->bell = $bell;
+			$myObj->display = $display;
+			$myObj->person = $person;
 
 		$myJSON = json_encode($myObj);
 		$content = $myJSON;
@@ -139,13 +140,15 @@ function send_message_to_pi($url,$content){
 	curl_setopt($curl, CURLOPT_POSTFIELDS, $content);
 	$json_response = curl_exec($curl);
 	$status = curl_getinfo($curl, CURLINFO_HTTP_CODE) ;
+	$curl_error = curl_error($curl);
 	curl_close($curl);
 	switch ($status) {
-		case 200 || 201:  # OK
-			$response = "Data sent successfully to: <small>$url</small><br>";
+		case 200:
+		case 201:
+			$response = "Data sent successfully to: <small>" . htmlspecialchars($url) . "</small><br>";
 			break;
-		default: # Error
-			$response = "ERROR SENDING DATA: <b>StatusCode:</b> " .$status."<br><b>URL:</b> $url<br><b>Content:</b><small>$content</small><br><b>Error:</b> " . curl_errno($curl) ."<br>"; 
+		default:
+			$response = "ERROR SENDING DATA: <b>StatusCode:</b> " . intval($status) . "<br><b>URL:</b> " . htmlspecialchars($url) . "<br><b>Error:</b> " . htmlspecialchars($curl_error) . "<br>";
 			break;
 	}
 #	$response = json_decode($json_response, true); # nutze ich nicht
@@ -192,7 +195,7 @@ if (isset($status)) {
 			<button onclick="populate()">Übernehmen</button> 
 			
 
-			<form role="form" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+			<form role="form" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="post">
 				<div class="form-group">
 					 <!-- TextZeile1 -->
 					<label for="TextZeile1">
@@ -217,7 +220,7 @@ if (isset($status)) {
 							<!-- Zielperson -->
 							<legend>Zielperson</legend>
 	 						<div class="form-check">
-								<label class="form-check-label"><input type="radio" class="form-check-input" name="person" id="person0" value="K0" <?php if ($person!="K1" || $person!="K2" ) {echo"checked";} ?> >Beide Kinder benachrichtigen</label>
+								<label class="form-check-label"><input type="radio" class="form-check-input" name="person" id="person0" value="K0" <?php if ($person!="K1" && $person!="K2" && $person!="K3") {echo"checked";} ?> >Beide Kinder benachrichtigen</label>
 							</div>
 							<div class="form-check">
 								<label class="form-check-label"><input type="radio" class="form-check-input" name="person" id="person1" value="K1" <?php if ($person=="K1") {echo"checked";} ?> >Ramona benachrichtigen</label>

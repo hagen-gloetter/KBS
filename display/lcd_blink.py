@@ -37,7 +37,7 @@ def main():
         print ("Time to blink in seconds 1-30:")
         sys.exit()
     zahl = int(sys.argv[1])
-    if (zahl > 0 or zahl < 31):
+    if (zahl > 0 and zahl < 31):
         lcd_blink(zahl)
     else:
         print ("Time to blink in seconds 1-30:")

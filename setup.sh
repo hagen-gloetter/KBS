@@ -8,20 +8,18 @@
 sudo raspi-config
 # 5 enable i2c
 #sudo vi /etc/modules
-# enable 
-echo "i2c-dev" >> /etc/modules
-echo "i2c-bcm2708" >> /etc/modules
+# enable
+grep -qxF 'i2c-dev' /etc/modules || echo "i2c-dev" >> /etc/modules
+grep -qxF 'i2c-bcm2708' /etc/modules || echo "i2c-bcm2708" >> /etc/modules
 sudo i2cdetect -y 1
 
 # not needed anymore -but good examples
 #git clone https://github.com/CaptainStouf/raspberry_lcd4x20_I2C
 
-sudo apt-get install python-dev python-rpi.gpio
-sudo apt-get install python-rpi.gpio python3-rpi.gpio python3-pigpio python3-smbus
-sudo apt-get install python3-pip 
-sudo apt-get install i2c-tools
-sudo apt-get install python-smbus
-pip install --upgrade pip
+sudo apt-get install -y python3-dev python3-rpi.gpio
+sudo apt-get install -y python3-rpi.gpio python3-pigpio python3-smbus
+sudo apt-get install -y python3-pip 
+sudo apt-get install -y i2c-tools
+pip3 install --upgrade pip
 sudo pip3 install Flask
-sudo pip3 install request
 
