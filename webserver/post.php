@@ -1,35 +1,49 @@
 <?php
-    $datum = date("d.m.Y");
-	$uhrzeit = date("H:i") . " Uhr";
-	$status = 200;
-    if (isset($_POST['line1']))   { $line1   = htmlspecialchars($_POST['line1']);   } else {$line1 = $datum;}
-    if (isset($_POST['line2']))   { $line2   = htmlspecialchars($_POST['line2']);   } else {$line2 = $uhrzeit;}
-    if (isset($_POST['bell']))    { $bell    = htmlspecialchars($_POST['bell']);    } else {$bell = "off";}
-    if (isset($_POST['display'])) { $display = htmlspecialchars($_POST['display']); } else {$display = "off";}
-    if (isset($_POST['zielperson'])) { $zielperson = htmlspecialchars($_POST['zielperson']); } else {$zielperson = "0";}
-    $myObj = new stdClass();
-    $myObj->line1 = $line1;
-    $myObj->line2 = $line2;
-    $myObj->bell  = $bell;
-    $myObj->display = $display;
-    $myJSON = json_encode($myObj);
-        echo $myJSON;
-    
-    $url = "http://pi-zero.fritz.box:80/lcd/api/v1.0/lcds";
-    $content = $myJSON;
-    $curl = curl_init();
-    curl_setopt($curl, CURLOPT_URL, $url);
-    curl_setopt($curl, CURLOPT_HEADER, false);
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($curl, CURLOPT_HTTPHEADER, array("Content-type: application/json"));
-    curl_setopt($curl, CURLOPT_POST, true);
-    curl_setopt($curl, CURLOPT_POSTFIELDS, $content);
-    $json_response = curl_exec($curl);
-    $status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-    curl_close($curl);
-    if ( $status != 201 ) {
-        #error
-    }
-    $response = json_decode($json_response, true);
+// KBS Post-API — Empfaengt POST-Daten und leitet sie an einen Raspberry Pi weiter
+header('Content-Type: application/json');
 
+$datum   = date("d.m.Y");
+$uhrzeit = date("H:i") . " Uhr";
+
+$line1   = isset($_POST['line1'])   ? htmlspecialchars($_POST['line1'])   : $datum;
+$line2   = isset($_POST['line2'])   ? htmlspecialchars($_POST['line2'])   : $uhrzeit;
+$bell    = isset($_POST['bell'])    ? htmlspecialchars($_POST['bell'])    : "off";
+$display = isset($_POST['display']) ? htmlspecialchars($_POST['display']) : "off";
+
+$myObj = new stdClass();
+$myObj->line1   = $line1;
+$myObj->line2   = $line2;
+$myObj->bell    = $bell;
+$myObj->display = $display;
+
+$content = json_encode($myObj);
+$url = "http://pi-zero1.fritz.box:8080/lcd/api/v1.0/lcds";
+
+$curl = curl_init();
+curl_setopt_array($curl, array(
+    CURLOPT_URL            => $url,
+    CURLOPT_HEADER         => false,
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_HTTPHEADER     => array("Content-type: application/json"),
+    CURLOPT_POST           => true,
+    CURLOPT_POSTFIELDS     => $content,
+    CURLOPT_TIMEOUT        => 10,
+    CURLOPT_CONNECTTIMEOUT => 5,
+));
+$json_response = curl_exec($curl);
+$http_code  = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+$curl_error = curl_error($curl);
+curl_close($curl);
+
+$result = array(
+    'sent'       => $content,
+    'target'     => $url,
+    'http_code'  => $http_code,
+    'success'    => ($http_code === 200 || $http_code === 201),
+);
+if ($curl_error) {
+    $result['error'] = $curl_error;
+}
+
+echo json_encode($result, JSON_PRETTY_PRINT);
 ?>

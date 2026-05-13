@@ -17,8 +17,7 @@ def main():
     lcd = lcddriver.lcd()
     jetzt = datetime.datetime.now()
     heute = date.today()
-    heute.weekday()
-    Wochentag = ("Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag")[heute.weekday()]
+    Wochentag = ("Mo", "Di", "Mi", "Do", "Fr", "Sa", "So")[heute.weekday()]
     Uhrzeit = jetzt.strftime('%H:%M')
     Datum = jetzt.strftime('%d.%m.') # huebscher ohne Jahr
     line1 = "  -- " + Uhrzeit + " -- "
@@ -44,9 +43,6 @@ def main():
         lcd.lcd_display_string(line2,2)
 
 if __name__ == '__main__':
-    main()
-
-if __name__ == "__main__":
     main()
 
 

@@ -1,7 +1,5 @@
-import sys
-sys.path.append("./lib")
 import smbus
-from time import *
+from time import sleep
 
 class i2c_device:
    def __init__(self, addr, port=1):

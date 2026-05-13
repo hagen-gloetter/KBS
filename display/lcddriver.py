@@ -1,8 +1,9 @@
 import sys
-sys.path.append("./lib")
+import os
+sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), "lib"))
 
 import i2c_lib
-from time import *
+from time import sleep
 
 # LCD Address
 ADDRESS = 0x27
@@ -57,6 +58,7 @@ class lcd:
    #initializes objects and lcd
    def __init__(self):
       self.lcd_device = i2c_lib.i2c_device(ADDRESS)
+      self.backlight_state = LCD_BACKLIGHT
 
       self.lcd_write(0x03)
       self.lcd_write(0x03)
@@ -71,13 +73,13 @@ class lcd:
 
    # clocks EN to latch command
    def lcd_strobe(self, data):
-      self.lcd_device.write_cmd(data | En | LCD_BACKLIGHT)
+      self.lcd_device.write_cmd(data | En | self.backlight_state)
       sleep(.0005)
-      self.lcd_device.write_cmd(((data & ~En) | LCD_BACKLIGHT))
+      self.lcd_device.write_cmd(((data & ~En) | self.backlight_state))
       sleep(.0001)
 
    def lcd_write_four_bits(self, data):
-      self.lcd_device.write_cmd(data | LCD_BACKLIGHT)
+      self.lcd_device.write_cmd(data | self.backlight_state)
       self.lcd_strobe(data)
 
    # write a command to lcd
@@ -87,12 +89,13 @@ class lcd:
       
    #turn on/off the lcd backlight
    def lcd_backlight(self, state):
-      if state in ("on","On","ON"):
-         self.lcd_device.write_cmd(LCD_BACKLIGHT)
-      elif state in ("off","Off","OFF"):
-         self.lcd_device.write_cmd(LCD_NOBACKLIGHT)
+      if state.lower() == "on":
+         self.backlight_state = LCD_BACKLIGHT
+      elif state.lower() == "off":
+         self.backlight_state = LCD_NOBACKLIGHT
       else:
          print ("Unknown State!")
+      self.lcd_device.write_cmd(self.backlight_state)
 
    # put string function
    def lcd_display_string(self, string, line):

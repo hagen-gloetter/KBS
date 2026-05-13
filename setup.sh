@@ -21,5 +21,5 @@ sudo apt-get install -y python3-rpi.gpio python3-pigpio python3-smbus
 sudo apt-get install -y python3-pip 
 sudo apt-get install -y i2c-tools
 pip3 install --upgrade pip
-sudo pip3 install Flask
+pip3 install -r requirements.txt
 

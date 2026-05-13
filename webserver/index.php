@@ -1,277 +1,217 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>KBS</title>
-    <meta name="description" content="Source code generated using layoutit.com">
-    <meta name="author" content="LayoutIt!">
+    <title>KBS – Kinder Benachrichtigungs System</title>
+    <meta name="description" content="Kinder Benachrichtigungs System – Nachrichten an LCD-Displays senden">
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
-<!--	<script src="//code.jquery.com/jquery-3.3.1.js"></script> -->
-	<script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
-
-	<script>
-    var header = document.querySelector('header');
-    var section = document.querySelector('section');
-
-	var g_json = load_json();
-
-	function populate (id){
-		var i = document.getElementById('auswahl').value;
-		document.getElementById('line1').value = g_json[i].Zeile1 ; 
-		document.getElementById('line2').value = g_json[i].Zeile2 ;
-		document.getElementById('bell').checked = (g_json[i].bell == "on") ? true : false;
-		document.getElementById('display').checked = (g_json[i].display == "on") ? true : false;
-	}
-
-    function submitform(){
-        if(document.myform.onsubmit &&
-        !document.myform.onsubmit())
-        {
-            return;
-        }
-        document.myform.submit();
-        return false;
-    }
-
-    function load_json() {
-        var requestURL = 'texte.json';
-        var request = new XMLHttpRequest();
-        request.open('GET', requestURL);
-        request.responseType = 'json';
-        request.send();
-
-        request.onload = function() {
-            var jsonObj = request.response;
-            showHeroes(jsonObj);
-			return jsonObj;
-        }
-    }
-
-    function showHeroes(jsonObj) {
-      var heroes = jsonObj['members'];
-	  g_json = jsonObj['members'];
-	  var select = document.getElementById("auswahl");
-	  select.innerHTML = "";
-
-      for(var i = 0; i < heroes.length; i++) {
-		var opt = heroes[i].Zeile1 + " " + heroes[i].Zeile2;
-		var el = document.createElement("option");
-		el.textContent = opt;
-		el.value = i;
-		select.appendChild(el);
-		}
-	}
-</script>	​
-	 
-	
   </head>
   <body>
-    <div class="container-fluid">
-	<div class="row">
-		<div class="col-md-4">
-		</div>
-		<div class="col-md-4">
-			<p>&nbsp;</p><!--<img alt="Bootstrap Image Preview" src="https://www.layoutit.com/img/sports-q-c-140-140-3.jpg">-->
-			<div class="page-header">
-				<h1>KBS<br>
-					<small>Kinder Benachrichtigungs System v1.1</small>
-				</h1>
-				<p>&nbsp;</p>
-			</div>
 
 <?php
     $datum = date("d.m.Y");
     $uhrzeit = date("H:i") . " Uhr";
-    if(isset($_POST['submit']))   {
-		if (isset($_POST['line1']))   { $line1   = htmlspecialchars($_POST['line1']);   } else {$line1 = "$datum";}
-		if (isset($_POST['line2']))   { $line2   = htmlspecialchars($_POST['line2']);   } else {$line2 = "$uhrzeit";}
-		if (isset($_POST['bell']))    { $bell    = htmlspecialchars($_POST['bell']);    } else {$bell = "off";}
-		if (isset($_POST['display'])) { $display = htmlspecialchars($_POST['display']); } else {$display = "off";}
-		if (isset($_POST['person'])) { $person = htmlspecialchars($_POST['person']); } else {$person = "";}
-			$myObj = new stdClass();
-			$myObj->line1 = $line1;
-			$myObj->line2 = $line2;
-			$myObj->bell = $bell;
-			$myObj->display = $display;
-			$myObj->person = $person;
+    $status = null;
 
-		$myJSON = json_encode($myObj);
-		$content = $myJSON;
-#        echo $myJSON;
-		$status = null;
-		if($person == "K0") {
-			$url = "http://pi-zero1.fritz.box:8080/lcd/api/v1.0/lcds";
-			$status = send_message_to_pi($url,$content);
-			$url = "http://pi-zero2.fritz.box:8080/lcd/api/v1.0/lcds";
-			$status .= send_message_to_pi($url,$content);
-			$url = "http://pi-zero3.fritz.box:8080/lcd/api/v1.0/lcds";
-			$status .= send_message_to_pi($url,$content);
-		}
-		elseif($person == "K1") {
-			$url = "http://pi-zero1.fritz.box:8080/lcd/api/v1.0/lcds";
-			$status = send_message_to_pi($url,$content);
-		}
-		elseif($person == "K2") {
-			$url = "http://pi-zero2.fritz.box:8080/lcd/api/v1.0/lcds";
-			$status = send_message_to_pi($url,$content);
-		}
-		elseif($person == "K3") {
-			$url = "http://pi-zero3.fritz.box:8080/lcd/api/v1.0/lcds";
-			$status = send_message_to_pi($url,$content);
-		}else{}
+    if(isset($_POST['submit'])) {
+        $line1   = isset($_POST['line1'])   ? htmlspecialchars($_POST['line1'])   : $datum;
+        $line2   = isset($_POST['line2'])   ? htmlspecialchars($_POST['line2'])   : $uhrzeit;
+        $bell    = isset($_POST['bell'])    ? htmlspecialchars($_POST['bell'])    : "off";
+        $display = isset($_POST['display']) ? htmlspecialchars($_POST['display']) : "off";
+        $person  = isset($_POST['person'])  ? htmlspecialchars($_POST['person'])  : "";
 
-    }else{
-        $line1  = $datum;
-        $line2  = $uhrzeit;
-        $bell   = "off";
-        $display= "off";
-	}
-	
-function send_message_to_pi($url,$content){
-	$curl = curl_init();
-	curl_setopt($curl, CURLOPT_URL, $url);
-	curl_setopt($curl, CURLOPT_HEADER, false);
-	curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($curl, CURLOPT_HTTPHEADER, array("Content-type: application/json"));
-	curl_setopt($curl, CURLOPT_POST, true);
-	curl_setopt($curl, CURLOPT_POSTFIELDS, $content);
-	$json_response = curl_exec($curl);
-	$status = curl_getinfo($curl, CURLINFO_HTTP_CODE) ;
-	$curl_error = curl_error($curl);
-	curl_close($curl);
-	switch ($status) {
-		case 200:
-		case 201:
-			$response = "Data sent successfully to: <small>" . htmlspecialchars($url) . "</small><br>";
-			break;
-		default:
-			$response = "ERROR SENDING DATA: <b>StatusCode:</b> " . intval($status) . "<br><b>URL:</b> " . htmlspecialchars($url) . "<br><b>Error:</b> " . htmlspecialchars($curl_error) . "<br>";
-			break;
-	}
-#	$response = json_decode($json_response, true); # nutze ich nicht
-	return $response;
+        $myObj = new stdClass();
+        $myObj->line1   = $line1;
+        $myObj->line2   = $line2;
+        $myObj->bell    = $bell;
+        $myObj->display = $display;
+
+        $content = json_encode($myObj);
+
+        $pi_targets = array(
+            "K0" => array(
+                "http://pi-zero1.fritz.box:8080/lcd/api/v1.0/lcds",
+                "http://pi-zero2.fritz.box:8080/lcd/api/v1.0/lcds",
+                "http://pi-zero3.fritz.box:8080/lcd/api/v1.0/lcds"
+            ),
+            "K1" => array("http://pi-zero1.fritz.box:8080/lcd/api/v1.0/lcds"),
+            "K2" => array("http://pi-zero2.fritz.box:8080/lcd/api/v1.0/lcds"),
+            "K3" => array("http://pi-zero3.fritz.box:8080/lcd/api/v1.0/lcds"),
+        );
+
+        if (isset($pi_targets[$person])) {
+            foreach ($pi_targets[$person] as $url) {
+                $status .= send_message_to_pi($url, $content);
+            }
+        }
+    } else {
+        $line1   = $datum;
+        $line2   = $uhrzeit;
+        $bell    = "off";
+        $display = "off";
+        $person  = "";
+    }
+
+function send_message_to_pi($url, $content) {
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+        CURLOPT_URL            => $url,
+        CURLOPT_HEADER         => false,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HTTPHEADER     => array("Content-type: application/json"),
+        CURLOPT_POST           => true,
+        CURLOPT_POSTFIELDS     => $content,
+        CURLOPT_TIMEOUT        => 10,
+        CURLOPT_CONNECTTIMEOUT => 5,
+    ));
+    $json_response = curl_exec($curl);
+    $http_code  = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+    $curl_error = curl_error($curl);
+    curl_close($curl);
+
+    if ($http_code === 200 || $http_code === 201) {
+        return '<div class="alert alert-success alert-dismissible fade show" role="alert">'
+             . '<strong>Gesendet!</strong> Nachricht an <code>' . htmlspecialchars($url) . '</code> erfolgreich.'
+             . '<button type="button" class="close" data-dismiss="alert">&times;</button></div>';
+    }
+    return '<div class="alert alert-danger alert-dismissible fade show" role="alert">'
+         . '<strong>Fehler!</strong> StatusCode: ' . intval($http_code)
+         . ' – ' . htmlspecialchars($curl_error)
+         . ' (<code>' . htmlspecialchars($url) . '</code>)'
+         . '<button type="button" class="close" data-dismiss="alert">&times;</button></div>';
 }
-
 ?>
-<?php
-if (isset($status)) {
-	$search = "ERROR";
-	if(preg_match("/{$search}/i", $status)) { # wenn error vorkommt war es ein Feher
-		?>
-			<!-- Alert red -->
-			<div class="alert alert-dismissable alert-danger">
-			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-			<h4>ERROR SENDING DATA</h4>
-			<?php echo "<b>Status:</b> " .$status."<br>" ?>
-		</div>
-		<?php
-	}else {
-		?>
-		<!-- Alert green -->
-		<div class="alert alert-dismissable alert-success">
-			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-				<h4>Data sent successfully!</h4>
-				<?php echo "$status"; ?>
-			</div>
-			<?php
-	}
-}
 
-?>
-			<!-- Alert green 
-			<div class="alert alert-dismissable alert-success">
-			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-				<h4>Data</h4>
-				<--?php echo "status = " .$status." , Text = $line1 - $line2<br>bell = $bell , display = $display , person = $person"; ?>
-			</div>
--->			
-			<label>Vorlagen:<br>
-				<select name="auswahl" id="auswahl" onchange="populate(this.id)"> 
-				 </select> 
-			</label>
-			<button onclick="populate()">Übernehmen</button> 
-			
+    <div class="container" style="max-width: 600px;">
 
-			<form role="form" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="post">
-				<div class="form-group">
-					 <!-- TextZeile1 -->
-					<label for="TextZeile1">
-						Text:
-					</label>
-					<input type="text" class="form-control" maxlength=16 id="line1" name="line1" autocomplete="off" value="<?php echo $line1 ?>" style="">
-					<input type="text" class="form-control" maxlength=16 id="line2" name="line2" autocomplete="off" value="<?php echo $line2 ?>" style="">
-				</div>
+      <!-- Header -->
+      <div class="text-center mt-4 mb-4">
+        <h1 class="display-4">&#x1F4E2; KBS</h1>
+        <p class="lead text-muted">Kinder Benachrichtigungs System</p>
+      </div>
 
-				<fieldset class="form-group">
-					<div class="row">
-						<div class="col-md-6">
-							<div class="form-check">
-								<!-- bell -->
-								<p><input type="checkbox" name="bell" id="bell" value="on" <?php if ($bell=="on") {echo"checked";} ?>> Klingel<br>
-								<!-- display -->
-								<input type="checkbox" name="display" id="display" value="on" <?php if ($display=="on") {echo"checked";} ?>> Blinken </p>
-							</div>
-							<button type="submit" name="submit" value="Send Command" class="btn btn-primary">An Display senden</button>
-						</div>
-						<div class="col-md-6">
-							<!-- Zielperson -->
-							<legend>Zielperson</legend>
-	 						<div class="form-check">
-								<label class="form-check-label"><input type="radio" class="form-check-input" name="person" id="person0" value="K0" <?php if ($person!="K1" && $person!="K2" && $person!="K3") {echo"checked";} ?> >Beide Kinder benachrichtigen</label>
-							</div>
-							<div class="form-check">
-								<label class="form-check-label"><input type="radio" class="form-check-input" name="person" id="person1" value="K1" <?php if ($person=="K1") {echo"checked";} ?> >Ramona benachrichtigen</label>
-							</div>
-							<div class="form-check">
-								<label class="form-check-label"><input type="radio" class="form-check-input" name="person" id="person2" value="K2" <?php if ($person=="K2") {echo"checked";} ?> >Denise benachrichtigen</label>
-							</div>
-							<div class="form-check ">
-								<label class="form-check-label"><input type="radio" class="form-check-input" name="person" id="person3" value="K3" <?php if ($person=="K3") {echo"checked";} ?> >	Den Vater benachrichtigen</label>
-							</div>
-						</div>
-				  </fieldset>
+      <!-- Status-Meldungen -->
+      <?php if ($status) { echo $status; } ?>
 
-				<button type="submit" name="submit" value="Send Command" class="btn btn-primary">An Display senden</button>
+      <!-- Vorlagen -->
+      <div class="card mb-3">
+        <div class="card-body">
+          <label class="font-weight-bold" for="auswahl">&#x1F4CB; Vorlage wählen:</label>
+          <div class="input-group">
+            <select class="custom-select" id="auswahl">
+              <option selected disabled>Bitte wählen...</option>
+            </select>
+            <div class="input-group-append">
+              <button class="btn btn-outline-secondary" type="button" id="btn-vorlage">Übernehmen</button>
+            </div>
+          </div>
+        </div>
+      </div>
 
-			</form>
-		</div>
-		<div class="col-md-4">
+      <!-- Formular -->
+      <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="post">
+        <div class="card mb-3">
+          <div class="card-header font-weight-bold">&#x1F4DD; Nachricht</div>
+          <div class="card-body">
+            <div class="form-group">
+              <label for="line1">Zeile 1 <small class="text-muted">(max. 16 Zeichen)</small></label>
+              <input type="text" class="form-control" maxlength="16" id="line1" name="line1" autocomplete="off"
+                     value="<?php echo htmlspecialchars($line1); ?>" placeholder="Erste Zeile...">
+            </div>
+            <div class="form-group">
+              <label for="line2">Zeile 2 <small class="text-muted">(max. 16 Zeichen)</small></label>
+              <input type="text" class="form-control" maxlength="16" id="line2" name="line2" autocomplete="off"
+                     value="<?php echo htmlspecialchars($line2); ?>" placeholder="Zweite Zeile...">
+            </div>
+            <div class="form-row">
+              <div class="col">
+                <div class="custom-control custom-switch">
+                  <input type="checkbox" class="custom-control-input" name="bell" id="bell" value="on"
+                         <?php if ($bell==="on") echo "checked"; ?>>
+                  <label class="custom-control-label" for="bell">&#x1F514; Klingel</label>
+                </div>
+              </div>
+              <div class="col">
+                <div class="custom-control custom-switch">
+                  <input type="checkbox" class="custom-control-input" name="display" id="display" value="on"
+                         <?php if ($display==="on") echo "checked"; ?>>
+                  <label class="custom-control-label" for="display">&#x1F4A1; Blinken</label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-		<div class="row">
+        <div class="card mb-3">
+          <div class="card-header font-weight-bold">&#x1F464; Zielperson</div>
+          <div class="card-body">
+            <div class="custom-control custom-radio">
+              <input type="radio" class="custom-control-input" name="person" id="person0" value="K0"
+                     <?php if ($person!=="K1" && $person!=="K2" && $person!=="K3") echo "checked"; ?>>
+              <label class="custom-control-label" for="person0">&#x1F46A; Alle Kinder</label>
+            </div>
+            <div class="custom-control custom-radio">
+              <input type="radio" class="custom-control-input" name="person" id="person1" value="K1"
+                     <?php if ($person==="K1") echo "checked"; ?>>
+              <label class="custom-control-label" for="person1">&#x1F467; Ramona</label>
+            </div>
+            <div class="custom-control custom-radio">
+              <input type="radio" class="custom-control-input" name="person" id="person2" value="K2"
+                     <?php if ($person==="K2") echo "checked"; ?>>
+              <label class="custom-control-label" for="person2">&#x1F467; Denise</label>
+            </div>
+            <div class="custom-control custom-radio">
+              <input type="radio" class="custom-control-input" name="person" id="person3" value="K3"
+                     <?php if ($person==="K3") echo "checked"; ?>>
+              <label class="custom-control-label" for="person3">&#x1F468; Vater</label>
+            </div>
+          </div>
+        </div>
 
-		</div>
+        <button type="submit" name="submit" value="Send Command" class="btn btn-primary btn-lg btn-block mb-4">
+          &#x1F4E8; An Display senden
+        </button>
+      </form>
 
+      <footer class="text-center text-muted mb-3">
+        <small>KBS v2.0</small>
+      </footer>
+    </div>
 
-			<!-- Alert green 		
-			<div class="alert alert-dismissable alert-success">
-				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-				<h4>Alert!
-				</h4> <strong>Warning!</strong> Best check yo self, you're not looking too good. <a href="#" class="alert-link">alert link</a>
-			</div>
-			<!-- Alert yellow 		
-			<div class="alert alert-dismissable alert-warning">
-				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-				<h4>Alert!
-				</h4> <strong>Warning!</strong> Best check yo self, you're not looking too good. <a href="#" class="alert-link">alert link</a>
-			</div>
-			<!-- Alert red  		
-			<div class="alert alert-dismissable alert-danger">
-				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-				<h4>
-					Alert!
-				</h4> <strong>Warning!</strong> Best check yo self, you're not looking too good. <a href="#" class="alert-link">alert link</a>
-			</div>
-			-->
-		</div>
-	</div>
-</div>
-
-
-<!--    <script src="js/jquery.min.js"></script>-->
+    <script src="js/jquery-3.7.1.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
-    <script src="js/scripts.js"></script>
+    <script>
+    var g_json = [];
+
+    $(document).ready(function() {
+        $.getJSON('texte.json', function(data) {
+            g_json = data.members || [];
+            var $select = $('#auswahl');
+            $.each(g_json, function(i, item) {
+                $select.append($('<option>', {
+                    value: i,
+                    text: item.Zeile1.trim() + ' – ' + item.Zeile2.trim()
+                }));
+            });
+        });
+
+        $('#btn-vorlage').on('click', function() {
+            var i = parseInt($('#auswahl').val());
+            if (isNaN(i) || !g_json[i]) return;
+            $('#line1').val(g_json[i].Zeile1);
+            $('#line2').val(g_json[i].Zeile2);
+            $('#bell').prop('checked', g_json[i].bell === 'on');
+            $('#display').prop('checked', g_json[i].display === 'on');
+        });
+
+        // Vorlage auch bei Select-Änderung direkt übernehmen
+        $('#auswahl').on('change', function() {
+            $('#btn-vorlage').click();
+        });
+    });
+    </script>
   </body>
 </html>

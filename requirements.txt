@@ -1,0 +1,5 @@
+# KBS Python-Abhaengigkeiten
+# Installation: pip3 install -r requirements.txt
+Flask>=2.0,<4.0
+RPi.GPIO>=0.7
+smbus>=1.1

@@ -62,7 +62,7 @@ class Buzzer(object):
 
   elif(tune==2):
     pitches=[262,330,392,523,1047]
-    duration=[0.2,0.2,0.2,0.2,0.2,0,5]
+    duration=[0.2,0.2,0.2,0.2,0.5]
     for p in pitches:
       self.buzz(p, duration[x])
       time.sleep(duration[x] *0.5)
@@ -96,11 +96,21 @@ class Buzzer(object):
 
 def main():
     if len(sys.argv) < 2:
-        print ("Enter Tune number 1-5:")
-        sys.exit()
-    zahl = int(sys.argv[1])
+        print("Verwendung: python3 buzzer3.py <Tune 1-5>")
+        sys.exit(1)
+    try:
+        zahl = int(sys.argv[1])
+    except ValueError:
+        print("Fehler: Bitte eine Zahl zwischen 1 und 5 angeben.")
+        sys.exit(1)
+    if zahl < 1 or zahl > 5:
+        print("Fehler: Tune muss zwischen 1 und 5 liegen.")
+        sys.exit(1)
     buzzer = Buzzer()
-    buzzer.play(int(zahl))
+    try:
+        buzzer.play(zahl)
+    finally:
+        GPIO.cleanup()
 
 
 if __name__ == "__main__":
