@@ -1,3 +1,11 @@
+#
+# KBS – LCD I2C Treiber
+# Steuert ein HD44780-kompatibles LCD-Display ueber einen PCF8574 I2C-Adapter.
+#
+# Unterstuetzt 16x2 und 20x4 Displays mit I2C-Adresse 0x27.
+# Basiert auf dem raspberry_lcd4x20_I2C Projekt.
+#
+
 import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), "lib"))

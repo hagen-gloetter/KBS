@@ -1,3 +1,11 @@
+#! /usr/bin/python3
+# -*- coding: utf-8 -*-
+#
+# KBS – LCD Display Test
+# Einfacher Hardware-Test: Zeigt Text an und blinkt das Backlight.
+# Dient zur Ueberpruefung der I2C-Verbindung und Display-Funktion.
+#
+
 import lcddriver
 import time
 lcd = lcddriver.lcd()

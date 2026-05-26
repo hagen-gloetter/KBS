@@ -14,7 +14,7 @@
 └──────────────┘                    └──────────────────┘
 ```
 
-- **Webserver** (`webserver/`): PHP-basierte Weboberfläche zum Senden von Nachrichten
+- **Webserver** (`webserver/`): PHP-basierte Weboberfläche zum Senden von Nachrichten (Vanilla JS, keine externen Abhängigkeiten)
 - **Display-Server** (`display/`): Flask REST-API auf dem Raspberry Pi, steuert LCD und Buzzer
 - **3D-Gehäuse** (`3d-case/`): 3D-Druck-Dateien für das Gehäuse
 - **Schaltplan** (`wiring-diagram/`): Fritzing-Datei für die Verkabelung
@@ -82,6 +82,30 @@ Parameter:
 | `bell` | Buzzer abspielen | `on` / `off` |
 | `display` | Display blinken lassen | `on` / `off` |
 
+### Post-API (für externe Systeme)
+
+Die `post.php` bietet eine einfache HTTP-Schnittstelle für Homeautomation-Systeme oder Skripte:
+
+```bash
+curl -X POST http://<webserver>/post.php \
+  -d "line1=Essen ist" \
+  -d "line2=fertig!" \
+  -d "bell=on" \
+  -d "display=on" \
+  -d "person=K0"
+```
+
+Parameter:
+| Parameter | Beschreibung | Werte | Default |
+|-----------|-------------|-------|---------|
+| `line1` | Erste Zeile (max. 16 Zeichen) | Text | Datum |
+| `line2` | Zweite Zeile (max. 16 Zeichen) | Text | Uhrzeit |
+| `bell` | Buzzer abspielen | `on` / `off` | `off` |
+| `display` | Display blinken lassen | `on` / `off` | `off` |
+| `person` | Zielperson | `K0` (alle) / `K1` / `K2` / `K3` | `K0` |
+
+Antwort: JSON mit Ergebnis pro Ziel-Pi.
+
 ### Weboberfläche
 
 Die PHP-Weboberfläche bietet:
@@ -109,10 +133,12 @@ KBS/
 │   ├── lcddriver.py        # LCD I2C-Treiber
 │   └── i2c_lib.py          # I2C-Bibliothek
 ├── webserver/              # PHP-Weboberfläche
+│   ├── config.php          # Zentrale Konfiguration (Hosts, Ports, Personen)
 │   ├── index.php           # Haupt-UI
-│   ├── post.php            # API-Proxy
-│   ├── edit.php            # Vorlagen-Editor
-│   └── texte.json          # Nachrichtenvorlagen
+│   ├── post.php            # API-Proxy (mit Zielauswahl)
+│   ├── edit.php            # Vorlagen-Editor (Legacy)
+│   ├── texte.json          # Nachrichtenvorlagen
+│   └── css/style.css       # Eigenes CSS (keine externen Abhängigkeiten)
 ├── 3d-case/                # 3D-Druck-Dateien
 ├── wiring-diagram/         # Fritzing-Schaltplan
 ├── setup.sh                # Installations-Skript
@@ -123,16 +149,32 @@ KBS/
 
 ## Konfiguration
 
-Die Pi-Hostnamen werden in folgenden Dateien konfiguriert:
-- `webserver/index.php`: URLs der Raspberry Pis (`pi-zero1`, `pi-zero2`, `pi-zero3`)
-- `deploy.sh`: Deployment-Ziele
+Alle netzwerkspezifischen Einstellungen werden zentral in `webserver/config.php` verwaltet:
+
+```php
+$KBS_TARGETS = array(
+    'K1' => array('name' => 'Ramona', 'host' => 'pi-zero1.fritz.box', 'emoji' => '&#x1F467;'),
+    'K2' => array('name' => 'Denise', 'host' => 'pi-zero2.fritz.box', 'emoji' => '&#x1F467;'),
+    'K3' => array('name' => 'Vater',  'host' => 'pi-zero3.fritz.box', 'emoji' => '&#x1F468;'),
+);
+```
+
+Neue Personen/Pis können einfach als weitere Einträge ergänzt werden. Die Weboberfläche generiert die Radio-Buttons automatisch aus dieser Konfiguration.
+
+Weitere Einstellungen:
+- `KBS_API_PORT` — Port der Flask-Server (Default: 8080)
+- `KBS_CURL_TIMEOUT` — cURL-Timeout in Sekunden (Default: 10)
+- `KBS_CURL_CONNECT_TIMEOUT` — Connect-Timeout (Default: 5)
+
+Die Deployment-Ziele in `deploy.sh` müssen separat angepasst werden.
 
 ## Bekannte Einschränkungen
 
 - Keine Authentifizierung auf der REST-API (nur für lokale Netzwerke geeignet)
-- Die Weboberfläche lädt jQuery von einem externen CDN
 - Maximale Textlänge: 16 Zeichen pro Zeile (Hardware-Limitation)
 - `socket_server_v1.py`, `socket_server_v2.py`, `socket_server_v3.py` sind ältere Entwicklungsversionen
+- `buzzer.py`, `buzzer2.py` sind ältere Test-Dateien (Python 2-Syntax, nicht aktiv genutzt)
+- `template.html`, `edit.php`, `styles.css` sind Legacy-Dateien (nicht aktiv genutzt)
 
 ## Lizenz
 

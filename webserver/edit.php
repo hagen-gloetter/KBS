@@ -1,6 +1,7 @@
 
 <?php 
-# https://mdn.github.io/learning-area/javascript/oojs/json/heroes-finished.html
+# Vorlagen-Editor (Legacy) — zeigt texte.json zum Bearbeiten an
+# Hinweis: Speichern ist nicht implementiert
 ?>
 
 <!DOCTYPE html>
@@ -10,7 +11,6 @@
 
     <title>KBS Edit</title>
 
-    <link href="https://fonts.googleapis.com/css?family=Righteous" rel="stylesheet"> 
     <link rel="stylesheet" href="styles.css">
   </head>
 
@@ -50,27 +50,25 @@
         request.send();
 
         request.onload = function() {
-            var superHeroes = request.response;
-            populateHeader(superHeroes);
-            showHeroes(superHeroes);
+            var jsonData = request.response;
+            populateHeader(jsonData);
+            showTemplates(jsonData);
             }
     }
 
     function populateHeader(jsonObj) {
       var myH1 = document.createElement('h1');
-      myH1.textContent = jsonObj['squadName'];
-//      header.appendChild(myH1);
+      myH1.textContent = jsonObj['AppName'] || 'KBS';
 
       var myPara = document.createElement('p');
-      myPara.textContent = 'Hometown: ' + jsonObj['homeTown'] + ' // Formed: ' + jsonObj['formed'];
-//      header.appendChild(myPara);
+      myPara.textContent = 'Vorlagen: ' + (jsonObj['members'] ? jsonObj['members'].length : 0);
 
     }
 
-    function showHeroes(jsonObj) {
-      var heroes = jsonObj['members'];
+    function showTemplates(jsonObj) {
+      var templates = jsonObj['members'];
 
-      for(var i = 0; i < heroes.length; i++) {
+      for(var i = 0; i < templates.length; i++) {
         var myArticle = document.createElement('article');
         var myH2 = document.createElement('h2');
         var myPara1 = document.createElement('p');
@@ -78,36 +76,36 @@
         var myPara3 = document.createElement('p');
         var myPara4 = document.createElement('p');
 
-        myPara1.textContent = 'Zeile1: ' + heroes[i].Zeile1;
-        myPara2.textContent = 'Zeile2: ' + heroes[i].Zeile2;
-        myPara3.textContent = 'bell:' + heroes[i].bell;
-        myPara4.textContent = 'blink:' + heroes[i].display;
+        myPara1.textContent = 'Zeile1: ' + templates[i].Zeile1;
+        myPara2.textContent = 'Zeile2: ' + templates[i].Zeile2;
+        myPara3.textContent = 'bell:' + templates[i].bell;
+        myPara4.textContent = 'blink:' + templates[i].display;
 
-        myH2.textContent = "Element " +i+ ":";
+        myH2.textContent = "Vorlage " +i+ ":";
 
         var f1   = document.createElement("input");
         f1.type  = "text";
         f1.name  = "Zeile1-" + i;
         f1.id    = "Zeile1-" + i;
-        f1.value = heroes[i].Zeile1;
+        f1.value = templates[i].Zeile1;
 
         var f2 = document.createElement("input");
         f2.type = "text";
         f2.name = "Zeile2-" + i;
         f2.id   = "Zeile2-" + i;
-        f2.value = heroes[i].Zeile2;
+        f2.value = templates[i].Zeile2;
 
         var f3 =  document.createElement('input');
         f3.type = "checkbox";
         f3.name = "bell-" + i;
         f3.id   = "bell-" + i;
-        f3.checked = (heroes[i].bell == "on") ? true : false;
+        f3.checked = (templates[i].bell == "on") ? true : false;
 
         var f4 =  document.createElement('input');
         f4.type = "checkbox";
         f4.name = "display-" + i;
         f4.id   = "display-" + i;
-        f4.checked = (heroes[i].display == "on") ? true : false;
+        f4.checked = (templates[i].display == "on") ? true : false;
 
         myArticle.appendChild(myH2);
         myArticle.appendChild(myPara1);

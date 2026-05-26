@@ -1,9 +1,15 @@
 #! /usr/bin/python3
 # -*- coding: UTF-8 -*-
-# setup
-
-# http://www.learningaboutelectronics.com/Articles/How-to-get-the-last-modified-date-of-a-file-in-Python.php
-# https://stackoverflow.com/questions/375154/how-do-i-get-the-time-a-file-was-last-modified-in-python
+#
+# KBS – Display-Abschaltung
+# Schaltet das LCD-Backlight nach 5 Minuten Inaktivitaet ab.
+# Wird per Crontab (jede Minute) ausgefuehrt.
+#
+# Logik:
+#   - Wenn 'lastrun'-Datei existiert und aelter als 5 Min → Display aus
+#   - Wenn keine 'lastrun'-Datei → Uhrzeit anzeigen (Standby)
+#   - Wenn 'lastrun' juenger als 5 Min → nichts tun (Display an lassen)
+#
 
 import lcddriver
 import time
@@ -12,6 +18,7 @@ from datetime import date
 import os
 
 def main():
+    """Prueft Inaktivitaet und schaltet Display bei Bedarf ab."""
     mypath = os.path.dirname(os.path.abspath(__file__))
     myfile = mypath +"/lastrun"
     lcd = lcddriver.lcd()

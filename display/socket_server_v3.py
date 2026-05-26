@@ -3,7 +3,7 @@
 # run
 # sudo python socket_server.py
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, abort, make_response
 from flask import request
 
 app = Flask(__name__)
@@ -12,13 +12,11 @@ tasks = []
 import RPi.GPIO as GPIO   #import the GPIO library
 import lcddriver
 import time
-import grequests
-#import asyncio
 
 class Buzzer(object):
  def __init__(self):
   GPIO.setmode(GPIO.BCM)  
-  self.buzzer_pin = 5 #set to GPIO pin 5
+  self.buzzer_pin = 15 #set to GPIO pin 15
   GPIO.setup(self.buzzer_pin, GPIO.IN)
   GPIO.setup(self.buzzer_pin, GPIO.OUT)
   print("buzzer ready")
@@ -44,8 +42,7 @@ class Buzzer(object):
    time.sleep(delay)
        #wait with pin 18 low
 
-#@asyncio.coroutine 
-def play(self, tune):
+ def play(self, tune):
   GPIO.setmode(GPIO.BCM)
   GPIO.setup(self.buzzer_pin, GPIO.OUT)
   x=0
@@ -62,7 +59,7 @@ def play(self, tune):
 
   elif(tune==2):
     pitches=[262,330,392,523,1047]
-    duration=[0.2,0.2,0.2,0.2,0.2,0,5]
+    duration=[0.2,0.2,0.2,0.2,0.5]
     for p in pitches:
       self.buzz(p, duration[x])
       time.sleep(duration[x] *0.5)
@@ -96,7 +93,6 @@ buzzer = Buzzer()
 
 
 @app.route('/')
-#@asyncio.coroutine
 def index():
     return "Kids Room Information System"
 
@@ -107,7 +103,6 @@ def get_task(task_id):
         abort(404)
     return jsonify({'task': task[0]})
 
-#@asyncio.coroutine
 @app.route('/lcd/api/v1.0/lcds', methods=['POST'])
 def create_task():
     if not request.json or not 'line1' in request.json:
@@ -117,22 +112,20 @@ def create_task():
     bell = request.json['bell']
     display = request.json['display']
     task = {
-        'line1': "line1",
-        'line2': "line2",
-        'bell' : "bell",
-        'display' : "display",
+        'line1': line1,
+        'line2': line2,
+        'bell' : bell,
+        'display' : display,
 
     }
     lcd_print(line1,line2,display,bell)
     tasks.append(task)
-    pass
-#    return jsonify({'task': task}), 201
+    return jsonify({'task': task}), 201
 
 @app.errorhandler(404)
 def not_found(error):
     return make_response(jsonify({'error': 'Not found'}), 404)
 
-#@asyncio.coroutine
 def lcd_print(line1,line2,display,bell):
     lcd.lcd_clear()
     lcd.lcd_backlight("on")

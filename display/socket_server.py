@@ -42,7 +42,17 @@ logger.info("Arbeitsverzeichnis: %s", mypath)
 MAX_LINE_LENGTH = 16
 
 def sanitize_lcd_text(text):
-    """Begrenze Text auf erlaubte Laenge und entferne Steuerzeichen."""
+    """Begrenze Text auf erlaubte Laenge und entferne Steuerzeichen.
+
+    Nur druckbare ASCII-Zeichen (32-126) werden durchgelassen,
+    da das LCD keine Unicode-Zeichen darstellen kann.
+
+    Args:
+        text: Eingabetext (wird bei Bedarf zu String konvertiert)
+
+    Returns:
+        Bereinigter Text, maximal MAX_LINE_LENGTH Zeichen
+    """
     if not isinstance(text, str):
         text = str(text)
     # Nur druckbare ASCII-Zeichen erlauben (LCD-kompatibel)
@@ -118,6 +128,14 @@ def not_found(error):
     return make_response(jsonify({'error': 'Not found'}), 404)
 
 def lcd_print(line1, line2, display, bell):
+    """Zeigt Text auf dem LCD an und loest optional Blinken/Klingel aus.
+
+    Args:
+        line1:   Text fuer Zeile 1 (max. 16 Zeichen)
+        line2:   Text fuer Zeile 2 (max. 16 Zeichen)
+        display: 'on' fuer Blink-Effekt, 'off' fuer normal
+        bell:    'on' fuer Buzzer, 'off' fuer stumm
+    """
     lcd.lcd_clear()
     lcd.lcd_backlight("on")
     if display == "on":  # Blinken an
@@ -135,6 +153,7 @@ def lcd_print(line1, line2, display, bell):
         logger.error("Fehler beim Erstellen von lastrun: %s", e)
 
 def bell_play():
+    """Startet buzzer3.py als Subprocess fuer den Klingelton."""
     logger.info("Bell on")
     buzzer_script = os.path.join(mypath, "buzzer3.py")
     try:
@@ -147,6 +166,7 @@ def bell_play():
         logger.error("Fehler beim Starten von buzzer3.py: %s", e)
 
 def lcd_blink():
+    """Startet lcd_blink.py als Subprocess fuer den Blink-Effekt."""
     logger.info("Blink on")
     blink_script = os.path.join(mypath, "lcd_blink.py")
     try:
@@ -159,6 +179,7 @@ def lcd_blink():
         logger.error("Fehler beim Starten von lcd_blink.py: %s", e)
 
 def lcd_off_timer():
+    """Schaltet das LCD-Backlight aus (wird nicht aktiv genutzt)."""
     logger.info("lcd_off_timer --> off")
     lcd.lcd_backlight("off")
 

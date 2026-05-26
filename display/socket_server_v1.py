@@ -3,7 +3,7 @@
 # run
 # sudo python socket_server.py
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, abort, make_response
 from flask import request
 
 app = Flask(__name__)
@@ -35,10 +35,10 @@ def create_task():
     bell = request.json['bell']
     display = request.json['display']
     task = {
-        'line1': "line1",
-        'line2': "line2",
-        'bell' : "bell",
-        'display' : "display",
+        'line1': line1,
+        'line2': line2,
+        'bell' : bell,
+        'display' : display,
 
     }
     lcd_print(line1,line2,display)
@@ -63,10 +63,10 @@ def lcd_print(line1,line2,display):
 
 
 def lcd_off_timer():
-    print  "lcd_off_timer --> off"
+    print("lcd_off_timer --> off")
     lcd.lcd_backlight("off")
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=80)
+    app.run(host='0.0.0.0', port=8080)
 
 #curl -i -H "Content-Type: application/json" -X POST -d '{"line1":"It ", "line2":"works", "bell":"on","display":"on" }' http://192.168.4.10:80/lcd/api/v1.0/lcds

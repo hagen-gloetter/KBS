@@ -1,5 +1,11 @@
+#! /usr/bin/python3
+# -*- coding: UTF-8 -*-
 #
-# Nach reboot Hostnamen und IP anzeigen
+# KBS – Bootscreen
+# Zeigt nach dem Booten Hostname und IP-Adresse auf dem LCD-Display an.
+# Wartet bis zu MAX_WAITTIME Sekunden auf eine Netzwerkverbindung.
+#
+# Wird per Crontab (@reboot) automatisch gestartet.
 #
 
 import lcddriver
@@ -8,15 +14,22 @@ import socket
 import fcntl
 import struct
 
-MAX_WAITTIME = 60
+MAX_WAITTIME = 60  # Maximale Wartezeit auf Netzwerk (Sekunden)
+
 
 def main():
+    """LCD initialisieren und IP-Adresse anzeigen."""
     lcd = lcddriver.lcd()
     lcd.lcd_clear()
     lcd.lcd_backlight("on")
     ip_addr = get_ip_loop(lcd)
 
 def get_ip_loop(lcd):
+    """Wartet auf Netzwerkverbindung und zeigt Ladefortschritt an.
+
+    Prueft abwechselnd WLAN (wlan0) und Ethernet (eth0).
+    Zeigt Hostname und IP auf dem Display sobald verbunden.
+    """
     t = 0
     hostname = socket.gethostname()
     ip_addr = "Not connected"

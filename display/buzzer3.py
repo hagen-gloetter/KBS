@@ -1,14 +1,20 @@
 #! /usr/bin/python3
 # -*- coding: utf-8 -*-
-
-#http://www.linuxcircle.com/2015/04/12/how-to-play-piezo-buzzer-tunes-on-raspberry-pi-gpio-with-pwm/
-#1. Connect the red wire of the buzzer to GPIO Pin 5 and the black one to GPIO ground
-#2. Copy the following code into buzzer.py
-#3. Run it with this command: sudo python3 buzzer.py
-#4. You can also use this as a module in your robot project.
 #
-
-# https://www.instructables.com/id/Playing-the-Imperial-March-From-Star-Wars-on-Raspb/
+# KBS – Buzzer-Steuerung (aktive Version)
+# Spielt verschiedene Melodien ueber einen Piezo-Buzzer an GPIO Pin 15.
+#
+# Verwendung: python3 buzzer3.py <Tune 1-5>
+#
+# Tunes:
+#   1 – Tonleiter auf/ab (C4-C6)
+#   2 – Aufsteigend kurz
+#   3 – Melodie mit Pausen
+#   4 – Absteigend hoch
+#   5 – Absteigend tief
+#
+# Hardware: Piezo-Buzzer an GPIO 15 + Ground
+#
 
 import RPi.GPIO as GPIO   #import the GPIO library
 import time               #import the time library
@@ -18,7 +24,7 @@ import sys
 class Buzzer(object):
  def __init__(self):
   GPIO.setmode(GPIO.BCM)  
-  self.buzzer_pin = 15 #set to GPIO pin 5
+  self.buzzer_pin = 15 #set to GPIO pin 15
   GPIO.setup(self.buzzer_pin, GPIO.IN)
   GPIO.setup(self.buzzer_pin, GPIO.OUT)
   print("buzzer ready")

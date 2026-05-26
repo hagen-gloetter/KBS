@@ -1,20 +1,28 @@
-import RPi.GPIO as GPIO # Importeer de GPIO bibliotheek.
-import time ## Importeer de bibliotheek voor tijdfuncties
- 
-buzzer_pin = 5  # Geef het nummer van de pin op waar de speaker is aangesloten.
-GPIO.setmode(GPIO.BCM) # GebruikBroadcom GPIO benaming van de pinnen.
-GPIO.setup(buzzer_pin, GPIO.OUT) # Zet de speaker pin als uitgang.
+#! /usr/bin/python3
+# -*- coding: utf-8 -*-
+#
+# KBS – Buzzer Test (Legacy)
+# Simple continuous buzzer test: beeps until CTRL+C is pressed.
+# Used for hardware testing only.
+#
 
-print "Druk op CTRL+C om het programma te beeindigen."
+import RPi.GPIO as GPIO # Import the GPIO library
+import time             # Import the time library
+ 
+buzzer_pin = 15  # GPIO pin 15 for buzzer
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(buzzer_pin, GPIO.OUT)
+
+print("Press CTRL+C to stop the program.")
 
 try:
   while True:
-    GPIO.output(buzzer_pin, True) # Zet speakerpin hoog.
-    time.sleep(.3) # Wacht even.
-    GPIO.output(buzzer_pin, False) # Zet speakerpin laag.
-    time.sleep(.5) # Wacht even.
+    GPIO.output(buzzer_pin, True)  # Set buzzer pin high
+    time.sleep(.3)                 # Wait briefly
+    GPIO.output(buzzer_pin, False) # Set buzzer pin low
+    time.sleep(.5)                 # Wait briefly
 
 except KeyboardInterrupt:  
-  GPIO.output(buzzer_pin, False) # Zet speakerpin laag.
-  # GPIO netjes afsluiten
+  GPIO.output(buzzer_pin, False)   # Set buzzer pin low
+  # Clean up GPIO
   GPIO.cleanup()

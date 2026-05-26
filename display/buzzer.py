@@ -1,11 +1,12 @@
-#http://www.linuxcircle.com/2015/04/12/how-to-play-piezo-buzzer-tunes-on-raspberry-pi-gpio-with-pwm/
-#1. Connect the red wire of the buzzer to GPIO Pin 5 and the black one to GPIO ground
-#2. Copy the following code into buzzer.py
-#3. Run it with this command: sudo python3 buzzer.py
-#4. You can also use this as a module in your robot project.
+#! /usr/bin/python3
+# -*- coding: utf-8 -*-
 #
-
-# https://www.instructables.com/id/Playing-the-Imperial-March-From-Star-Wars-on-Raspb/
+# KBS – Buzzer-Steuerung (Legacy)
+# Aeltere Version der Buzzer-Steuerung. Aktive Version: buzzer3.py
+# Spielt verschiedene Melodien ueber einen Piezo-Buzzer an GPIO Pin 15.
+#
+# Verwendung: python3 buzzer.py (interaktive Auswahl)
+#
 
 import RPi.GPIO as GPIO   #import the GPIO library
 import time               #import the time library
@@ -13,7 +14,7 @@ import time               #import the time library
 class Buzzer(object):
  def __init__(self):
   GPIO.setmode(GPIO.BCM)  
-  self.buzzer_pin = 15 #set to GPIO pin 5
+  self.buzzer_pin = 15 #set to GPIO pin 15
   GPIO.setup(self.buzzer_pin, GPIO.IN)
   GPIO.setup(self.buzzer_pin, GPIO.OUT)
   print("buzzer ready")
@@ -57,7 +58,7 @@ class Buzzer(object):
 
   elif(tune==2):
     pitches=[262,330,392,523,1047]
-    duration=[0.2,0.2,0.2,0.2,0.2,0,5]
+    duration=[0.2,0.2,0.2,0.2,0.5]
     for p in pitches:
       self.buzz(p, duration[x])
       time.sleep(duration[x] *0.5)
@@ -89,7 +90,15 @@ class Buzzer(object):
   GPIO.setup(self.buzzer_pin, GPIO.IN)
 
 if __name__ == "__main__":
-  a = input("Enter Tune number 1-5:")
-  buzzer = Buzzer()
-  buzzer.play(int(a))
+  try:
+    a = int(input("Enter Tune number 1-5: "))
+    if a < 1 or a > 5:
+      print("Fehler: Tune muss zwischen 1 und 5 liegen.")
+    else:
+      buzzer = Buzzer()
+      buzzer.play(a)
+  except ValueError:
+    print("Fehler: Bitte eine Zahl eingeben.")
+  finally:
+    GPIO.cleanup()
   

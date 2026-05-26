@@ -1,3 +1,9 @@
+#
+# KBS – I2C Bibliothek
+# Low-Level I2C-Kommunikation ueber den SMBus.
+# Wird von lcddriver.py fuer die LCD-Ansteuerung verwendet.
+#
+
 import smbus
 from time import sleep
 

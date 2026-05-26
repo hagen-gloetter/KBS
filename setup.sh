@@ -1,5 +1,12 @@
 
-# OLD python 2.7
+# KBS – Installations-Skript
+# Installiert alle Abhaengigkeiten auf dem Raspberry Pi.
+# Aktiviert den I2C-Bus und installiert Python-Pakete.
+#
+# Ausfuehrung: sudo bash setup.sh
+#
+
+# OLD python 2.7 (nicht mehr benoetigt)
 #sudo apt-get install python-smbus i2c-tools git 
 #sudo apt install python-pip
 #sudo pip install flask

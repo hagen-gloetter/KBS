@@ -12,6 +12,11 @@ import sys
 lcd = lcddriver.lcd()
 
 def lcd_blink(dauer):
+    """Laesst das LCD-Backlight fuer die angegebene Dauer blinken.
+
+    Args:
+        dauer: Blink-Dauer in Sekunden (jede Sekunde = 1x an/aus)
+    """
     print("lcd_blink " + str(dauer) + "s")
     for x in range(dauer):
         time.sleep(.5)

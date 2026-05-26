@@ -2,27 +2,39 @@
 <html lang="de">
   <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>KBS – Kinder Benachrichtigungs System</title>
     <meta name="description" content="Kinder Benachrichtigungs System – Nachrichten an LCD-Displays senden">
-    <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
   </head>
   <body>
 
 <?php
+    /**
+     * KBS – Kinder Benachrichtigungs System
+     * Haupt-Weboberflaeche zum Senden von Nachrichten an LCD-Displays.
+     *
+     * Funktionsweise:
+     * 1. Benutzer waehlt Vorlage oder gibt Text manuell ein
+     * 2. Optionen (Klingel, Blinken) und Zielperson werden gewaehlt
+     * 3. POST-Request sendet JSON an die Raspberry Pi Flask-APIs
+     * 4. Ergebnis wird als Erfolgs-/Fehlermeldung angezeigt
+     */
+    require_once __DIR__ . '/config.php';
+
     $datum = date("d.m.Y");
     $uhrzeit = date("H:i") . " Uhr";
     $status = null;
 
     if(isset($_POST['submit'])) {
+        // Formulardaten auslesen und sanitisieren
         $line1   = isset($_POST['line1'])   ? htmlspecialchars($_POST['line1'])   : $datum;
         $line2   = isset($_POST['line2'])   ? htmlspecialchars($_POST['line2'])   : $uhrzeit;
         $bell    = isset($_POST['bell'])    ? htmlspecialchars($_POST['bell'])    : "off";
         $display = isset($_POST['display']) ? htmlspecialchars($_POST['display']) : "off";
         $person  = isset($_POST['person'])  ? htmlspecialchars($_POST['person'])  : "";
 
+        // JSON-Payload fuer die Pi-API erstellen
         $myObj = new stdClass();
         $myObj->line1   = $line1;
         $myObj->line2   = $line2;
@@ -31,21 +43,10 @@
 
         $content = json_encode($myObj);
 
-        $pi_targets = array(
-            "K0" => array(
-                "http://pi-zero1.fritz.box:8080/lcd/api/v1.0/lcds",
-                "http://pi-zero2.fritz.box:8080/lcd/api/v1.0/lcds",
-                "http://pi-zero3.fritz.box:8080/lcd/api/v1.0/lcds"
-            ),
-            "K1" => array("http://pi-zero1.fritz.box:8080/lcd/api/v1.0/lcds"),
-            "K2" => array("http://pi-zero2.fritz.box:8080/lcd/api/v1.0/lcds"),
-            "K3" => array("http://pi-zero3.fritz.box:8080/lcd/api/v1.0/lcds"),
-        );
-
-        if (isset($pi_targets[$person])) {
-            foreach ($pi_targets[$person] as $url) {
-                $status .= send_message_to_pi($url, $content);
-            }
+        // Ziel-URLs ueber zentrale Konfiguration ermitteln
+        $targets = kbs_get_targets($person);
+        foreach ($targets as $url) {
+            $status .= send_message_to_pi($url, $content);
         }
     } else {
         $line1   = $datum;
@@ -55,6 +56,13 @@
         $person  = "";
     }
 
+/**
+ * Sendet eine Nachricht per cURL POST an einen Raspberry Pi.
+ *
+ * @param string $url      Ziel-URL der Pi Flask-API
+ * @param string $content  JSON-kodierter Nachrichteninhalt
+ * @return string          HTML-Alert (Erfolg oder Fehler)
+ */
 function send_message_to_pi($url, $content) {
     $curl = curl_init();
     curl_setopt_array($curl, array(
@@ -64,8 +72,8 @@ function send_message_to_pi($url, $content) {
         CURLOPT_HTTPHEADER     => array("Content-type: application/json"),
         CURLOPT_POST           => true,
         CURLOPT_POSTFIELDS     => $content,
-        CURLOPT_TIMEOUT        => 10,
-        CURLOPT_CONNECTTIMEOUT => 5,
+        CURLOPT_TIMEOUT        => KBS_CURL_TIMEOUT,
+        CURLOPT_CONNECTTIMEOUT => KBS_CURL_CONNECT_TIMEOUT,
     ));
     $json_response = curl_exec($curl);
     $http_code  = curl_getinfo($curl, CURLINFO_HTTP_CODE);
@@ -73,144 +81,130 @@ function send_message_to_pi($url, $content) {
     curl_close($curl);
 
     if ($http_code === 200 || $http_code === 201) {
-        return '<div class="alert alert-success alert-dismissible fade show" role="alert">'
-             . '<strong>Gesendet!</strong> Nachricht an <code>' . htmlspecialchars($url) . '</code> erfolgreich.'
-             . '<button type="button" class="close" data-dismiss="alert">&times;</button></div>';
+        return '<div class="alert alert-success">'
+             . '<span><strong>Gesendet!</strong> Nachricht an <code>' . htmlspecialchars($url) . '</code> erfolgreich.</span>'
+             . '<button type="button" class="alert-close" onclick="this.parentElement.remove()">&times;</button></div>';
     }
-    return '<div class="alert alert-danger alert-dismissible fade show" role="alert">'
-         . '<strong>Fehler!</strong> StatusCode: ' . intval($http_code)
+    return '<div class="alert alert-danger">'
+         . '<span><strong>Fehler!</strong> StatusCode: ' . intval($http_code)
          . ' – ' . htmlspecialchars($curl_error)
-         . ' (<code>' . htmlspecialchars($url) . '</code>)'
-         . '<button type="button" class="close" data-dismiss="alert">&times;</button></div>';
+         . ' (<code>' . htmlspecialchars($url) . '</code>)</span>'
+         . '<button type="button" class="alert-close" onclick="this.parentElement.remove()">&times;</button></div>';
 }
 ?>
 
-    <div class="container" style="max-width: 600px;">
+    <div class="container">
 
-      <!-- Header -->
-      <div class="text-center mt-4 mb-4">
-        <h1 class="display-4">&#x1F4E2; KBS</h1>
-        <p class="lead text-muted">Kinder Benachrichtigungs System</p>
+      <div class="header">
+        <h1>&#x1F4E2; KBS</h1>
+        <p>Kinder Benachrichtigungs System</p>
       </div>
 
-      <!-- Status-Meldungen -->
       <?php if ($status) { echo $status; } ?>
 
-      <!-- Vorlagen -->
-      <div class="card mb-3">
+      <div class="card">
         <div class="card-body">
-          <label class="font-weight-bold" for="auswahl">&#x1F4CB; Vorlage wählen:</label>
+          <label for="auswahl"><strong>&#x1F4CB; Vorlage wählen:</strong></label>
           <div class="input-group">
-            <select class="custom-select" id="auswahl">
+            <select class="form-select" id="auswahl">
               <option selected disabled>Bitte wählen...</option>
             </select>
-            <div class="input-group-append">
-              <button class="btn btn-outline-secondary" type="button" id="btn-vorlage">Übernehmen</button>
-            </div>
+            <button class="btn btn-outline" type="button" id="btn-vorlage">Übernehmen</button>
           </div>
         </div>
       </div>
 
-      <!-- Formular -->
       <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="post">
-        <div class="card mb-3">
-          <div class="card-header font-weight-bold">&#x1F4DD; Nachricht</div>
+        <div class="card">
+          <div class="card-header">&#x1F4DD; Nachricht</div>
           <div class="card-body">
             <div class="form-group">
-              <label for="line1">Zeile 1 <small class="text-muted">(max. 16 Zeichen)</small></label>
-              <input type="text" class="form-control" maxlength="16" id="line1" name="line1" autocomplete="off"
+              <label for="line1">Zeile 1 <small>(max. 16 Zeichen)</small></label>
+              <input type="text" class="form-control lcd-input" maxlength="16" id="line1" name="line1" autocomplete="off"
                      value="<?php echo htmlspecialchars($line1); ?>" placeholder="Erste Zeile...">
             </div>
             <div class="form-group">
-              <label for="line2">Zeile 2 <small class="text-muted">(max. 16 Zeichen)</small></label>
-              <input type="text" class="form-control" maxlength="16" id="line2" name="line2" autocomplete="off"
+              <label for="line2">Zeile 2 <small>(max. 16 Zeichen)</small></label>
+              <input type="text" class="form-control lcd-input" maxlength="16" id="line2" name="line2" autocomplete="off"
                      value="<?php echo htmlspecialchars($line2); ?>" placeholder="Zweite Zeile...">
             </div>
-            <div class="form-row">
-              <div class="col">
-                <div class="custom-control custom-switch">
-                  <input type="checkbox" class="custom-control-input" name="bell" id="bell" value="on"
-                         <?php if ($bell==="on") echo "checked"; ?>>
-                  <label class="custom-control-label" for="bell">&#x1F514; Klingel</label>
-                </div>
-              </div>
-              <div class="col">
-                <div class="custom-control custom-switch">
-                  <input type="checkbox" class="custom-control-input" name="display" id="display" value="on"
-                         <?php if ($display==="on") echo "checked"; ?>>
-                  <label class="custom-control-label" for="display">&#x1F4A1; Blinken</label>
-                </div>
-              </div>
+            <div class="switch-row">
+              <label class="toggle">
+                <input type="checkbox" name="bell" id="bell" value="on"
+                       <?php if ($bell==="on") echo "checked"; ?>>
+                <span class="toggle-track"></span>
+                &#x1F514; Klingel
+              </label>
+              <label class="toggle">
+                <input type="checkbox" name="display" id="display" value="on"
+                       <?php if ($display==="on") echo "checked"; ?>>
+                <span class="toggle-track"></span>
+                &#x1F4A1; Blinken
+              </label>
             </div>
           </div>
         </div>
 
-        <div class="card mb-3">
-          <div class="card-header font-weight-bold">&#x1F464; Zielperson</div>
+        <div class="card">
+          <div class="card-header">&#x1F464; Zielperson</div>
           <div class="card-body">
-            <div class="custom-control custom-radio">
-              <input type="radio" class="custom-control-input" name="person" id="person0" value="K0"
-                     <?php if ($person!=="K1" && $person!=="K2" && $person!=="K3") echo "checked"; ?>>
-              <label class="custom-control-label" for="person0">&#x1F46A; Alle Kinder</label>
-            </div>
-            <div class="custom-control custom-radio">
-              <input type="radio" class="custom-control-input" name="person" id="person1" value="K1"
-                     <?php if ($person==="K1") echo "checked"; ?>>
-              <label class="custom-control-label" for="person1">&#x1F467; Ramona</label>
-            </div>
-            <div class="custom-control custom-radio">
-              <input type="radio" class="custom-control-input" name="person" id="person2" value="K2"
-                     <?php if ($person==="K2") echo "checked"; ?>>
-              <label class="custom-control-label" for="person2">&#x1F467; Denise</label>
-            </div>
-            <div class="custom-control custom-radio">
-              <input type="radio" class="custom-control-input" name="person" id="person3" value="K3"
-                     <?php if ($person==="K3") echo "checked"; ?>>
-              <label class="custom-control-label" for="person3">&#x1F468; Vater</label>
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="person" value="K0"
+                       <?php if (!isset($KBS_TARGETS[$person])) echo "checked"; ?>>
+                <span class="radio-dot"></span>
+                &#x1F46A; Alle Kinder
+              </label>
+              <?php foreach ($KBS_TARGETS as $key => $target): ?>
+              <label class="radio-option">
+                <input type="radio" name="person" value="<?php echo $key; ?>"
+                       <?php if ($person === $key) echo "checked"; ?>>
+                <span class="radio-dot"></span>
+                <?php echo $target['emoji'] . ' ' . htmlspecialchars($target['name']); ?>
+              </label>
+              <?php endforeach; ?>
             </div>
           </div>
         </div>
 
-        <button type="submit" name="submit" value="Send Command" class="btn btn-primary btn-lg btn-block mb-4">
+        <button type="submit" name="submit" value="Send Command" class="btn btn-primary">
           &#x1F4E8; An Display senden
         </button>
       </form>
 
-      <footer class="text-center text-muted mb-3">
-        <small>KBS v2.0</small>
-      </footer>
+      <div class="footer">KBS v3.0</div>
     </div>
 
-    <script src="js/jquery-3.7.1.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
     <script>
-    var g_json = [];
-
-    $(document).ready(function() {
-        $.getJSON('texte.json', function(data) {
-            g_json = data.members || [];
-            var $select = $('#auswahl');
-            $.each(g_json, function(i, item) {
-                $select.append($('<option>', {
-                    value: i,
-                    text: item.Zeile1.trim() + ' – ' + item.Zeile2.trim()
-                }));
+    document.addEventListener('DOMContentLoaded', function() {
+        var templates = [];
+        fetch('texte.json')
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                templates = data.members || [];
+                var select = document.getElementById('auswahl');
+                templates.forEach(function(item, i) {
+                    var option = document.createElement('option');
+                    option.value = i;
+                    option.textContent = item.Zeile1.trim() + ' \u2013 ' + item.Zeile2.trim();
+                    select.appendChild(option);
+                });
+            })
+            .catch(function(err) {
+                console.error('Fehler beim Laden der Vorlagen:', err);
             });
-        });
 
-        $('#btn-vorlage').on('click', function() {
-            var i = parseInt($('#auswahl').val());
-            if (isNaN(i) || !g_json[i]) return;
-            $('#line1').val(g_json[i].Zeile1);
-            $('#line2').val(g_json[i].Zeile2);
-            $('#bell').prop('checked', g_json[i].bell === 'on');
-            $('#display').prop('checked', g_json[i].display === 'on');
-        });
+        function applyTemplate() {
+            var i = parseInt(document.getElementById('auswahl').value);
+            if (isNaN(i) || !templates[i]) return;
+            document.getElementById('line1').value = templates[i].Zeile1;
+            document.getElementById('line2').value = templates[i].Zeile2;
+            document.getElementById('bell').checked = (templates[i].bell === 'on');
+            document.getElementById('display').checked = (templates[i].display === 'on');
+        }
 
-        // Vorlage auch bei Select-Änderung direkt übernehmen
-        $('#auswahl').on('change', function() {
-            $('#btn-vorlage').click();
-        });
+        document.getElementById('btn-vorlage').addEventListener('click', applyTemplate);
+        document.getElementById('auswahl').addEventListener('change', applyTemplate);
     });
     </script>
   </body>

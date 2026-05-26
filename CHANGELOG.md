@@ -7,6 +7,68 @@ und dieses Projekt verwendet [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Removed
+- **[Medium]** jQuery 3.7.1 komplett entfernt — kein JavaScript-Framework mehr nötig
+- **[Medium]** Bootstrap 4 CSS und JS komplett entfernt — kein CSS-Framework mehr nötig
+- **[Medium]** Unbenutzte JS-Dateien gelöscht: `jquery-3.7.1.min.js`, `jquery.min.js`, `popper.min.js`, `bootstrap.min.js`, `scripts.js`
+- **[Medium]** Unbenutzte CSS-Dateien gelöscht: alle `bootstrap*.css` und zugehörige `.map`-Dateien
+- **[Low]** Leeres `webserver/fonts/`-Verzeichnis gelöscht
+- **[Low]** IE-Edge-Compatibility Meta-Tag (`X-UA-Compatible`) entfernt (veraltet, nicht mehr relevant)
+- **[Low]** Bootstrap-spezifische `data-dismiss`-Attribute durch Vanilla JS `onclick`-Handler ersetzt
+
+### Added
+- **[Medium]** `config.php`: Zentrale Konfigurationsdatei für Pi-Hostnamen, Ports, Timeouts und Personenzuordnungen
+- **[Medium]** `post.php`: Optionaler `person`-Parameter für Zielauswahl (K0=alle, K1/K2/K3=einzeln)
+- **[Medium]** `post.php`: Multi-Target-Unterstützung — sendet an mehrere Pis und gibt Ergebnis pro Ziel zurück
+- **[Medium]** Vollständig eigenes CSS (`css/style.css`) mit CSS Custom Properties, modernen Toggle-Switches, Custom Radio-Buttons, Card-Layout, Responsive Design
+- **[Medium]** Vanilla JavaScript für Vorlagen-Laden (`fetch()` API statt jQuery `$.getJSON()`)
+- **[Medium]** CSS-only Toggle-Switches statt Bootstrap Custom Switches
+- **[Medium]** CSS-only Custom Radio-Buttons mit Übergangsanimationen
+- **[Low]** Docstrings und Modul-Header für alle Python-Dateien hinzugefügt
+- **[Low]** PHPDoc-Blöcke für PHP-Dateien hinzugefügt
+- **[Low]** Kommentare für Shell-Skripte (`setup.sh`, `deploy.sh`, `crontab.sh`) ergänzt
+- **[Low]** CSS-Animation `alertSlideIn` für Statusmeldungen
+- **[Low]** Responsive Media-Queries für Mobile-Geräte (< 480px)
+- **[Low]** CSS-Placeholder-Styling für LCD-Eingabefelder
+
+### Changed
+- **[Medium]** `index.php`: Pi-Targets über `config.php` statt hardcoded Arrays
+- **[Medium]** `index.php`: Radio-Buttons werden dynamisch aus `$KBS_TARGETS` generiert
+- **[Medium]** `index.php`: cURL-Timeouts über Konstanten aus `config.php`
+- **[Medium]** `index.php`: Komplettes Frontend-Rewrite ohne externe Abhängigkeiten (jQuery, Bootstrap)
+- **[Medium]** `index.php`: Alert-HTML vereinfacht (`alert-close` + `onclick` statt Bootstrap JS)
+- **[Medium]** `post.php`: Nutzt jetzt `config.php` für Ziel-URLs statt hardcoded `pi-zero1`
+- **[Low]** `buzzer2.py`: Niederländische Kommentare und Texte ins Englische übersetzt
+- **[Low]** Version-Bump von v2.0 auf v3.0
+- **[Low]** `README.md`: Konfiguration, post.php-API und Legacy-Dateien dokumentiert
+
+### Fixed (Legacy-Dateien)
+- **[High]** `buzzer.py`: Tune 2 Duration-Bug — `[0.2,0.2,0.2,0.2,0.2,0,5]` → `[0.2,0.2,0.2,0.2,0.5]`
+- **[High]** `buzzer.py`: GPIO-Pin-Kommentar korrigiert (sagte Pin 5, war bereits Pin 15)
+- **[High]** `buzzer.py`: `__main__`-Guard mit Input-Validierung und `GPIO.cleanup()` im `finally`-Block
+- **[High]** `buzzer2.py`: Python 2 Print-Syntax `print "text"` → Python 3 `print("text")`
+- **[High]** `buzzer2.py`: GPIO-Pin von 5 auf 15 korrigiert (konsistent mit Hardware-Doku)
+- **[High]** `socket_server_v1.py`: Fehlende Imports `abort`, `make_response` ergänzt
+- **[High]** `socket_server_v1.py`: Task-Dictionary speicherte String-Literale `"line1"` statt Variablen
+- **[High]** `socket_server_v1.py`: Python 2 Print-Syntax in `lcd_off_timer()` → Python 3
+- **[High]** `socket_server_v1.py`: Port von 80 auf 8080 korrigiert (konsistent mit aktuellem Server)
+- **[High]** `socket_server_v2.py`: Fehlende Imports `abort`, `make_response` ergänzt
+- **[High]** `socket_server_v2.py`: `play()`-Methode war außerhalb der Buzzer-Klasse (falsche Einrückung)
+- **[High]** `socket_server_v2.py`: Task-Dictionary speicherte String-Literale statt Variablen
+- **[High]** `socket_server_v2.py`: `pass` statt `return jsonify()` in `create_task()` behoben
+- **[High]** `socket_server_v2.py`: Tune 2 Duration-Bug behoben
+- **[High]** `socket_server_v2.py`: GPIO-Pin von 5 auf 15 korrigiert
+- **[Medium]** `socket_server_v2.py`: Nicht-funktionales `asyncio`-Import und Decorators entfernt
+- **[High]** `socket_server_v3.py`: Gleiche Fixes wie v2 (Imports, play()-Einrückung, Task-Dict, return, Tune 2, Pin)
+- **[Medium]** `socket_server_v3.py`: Nicht verfügbares `grequests`-Import entfernt
+- **[Medium]** `template.html`: Referenzen auf gelöschte Bootstrap/jQuery-Dateien entfernt
+- **[Medium]** `template.html`: Doppelte Radio-Button-ID `optionsRadios2` → `optionsRadios2a`
+- **[Medium]** `template.html`: Base64-Data-URI-Inline-Styles aus Input-Feldern entfernt
+- **[Low]** `template.html`: LayoutIt-Meta-Tags entfernt, IE-Compat-Meta entfernt
+- **[Medium]** `edit.php`: Externes Google Fonts CDN entfernt (Datenschutz/Privacy)
+- **[Low]** `edit.php`: Tutorial-Variablennamen (`superHeroes`, `heroes`) durch `jsonData`, `templates` ersetzt
+- **[Low]** `edit.php`: `populateHeader()` auf KBS-Felder angepasst statt Tutorial-Felder
+
 ### Security
 - **[Critical]** jQuery 3.3.1 → 3.7.1 aktualisiert (CVE-2020-11022, CVE-2020-11023, CVE-2019-11358)
 - **[High]** jQuery wird jetzt lokal geladen statt vom CDN (keine externe Abhängigkeit, kein Supply-Chain-Risiko)
